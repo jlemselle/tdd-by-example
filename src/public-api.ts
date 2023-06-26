@@ -1,49 +1,43 @@
-import { TestCase } from "./test-case";
 import { TestSuite } from "./test-suite";
 
 type BeforeEachFn = () => void;
 type TestFn = () => void;
 type AfterEachFn = () => void;
 
-let beforeEachFn: BeforeEachFn = () => {};
-let testCollection: TestCase[] = [];
-let afterEachFn: AfterEachFn = () => {};
+interface TestDefinnition {
+  name: string;
+  testFn: TestFn;
+}
+
+let registeredBeforeEachFn: BeforeEachFn = () => {};
+let registeredTests: TestDefinnition[] = [];
+let registeredAfterEachFn: AfterEachFn = () => {};
 
 export function describe(name: string, suiteFn: () => void): TestSuite {
-  beforeEach = [];
-  testCollection = [];
-  afterEach = [];
+  registeredBeforeEachFn = () => {};
+  registeredTests = [];
+  registeredAfterEachFn = () => {};
   suiteFn();
   const suite = new TestSuite();
-  for (const test of testCollection) {
-    suite.add(test);
+  for (const test of registeredTests) {
+    suite.add({
+      name: test.name,
+      setUp: registeredBeforeEachFn,
+      run: test.testFn,
+      tearDown: registeredAfterEachFn,
+    });
   }
   return suite;
 }
 
 export function beforeEach(beforeEachFn: BeforeEachFn) {
-  beforeEachCollection.push(beforeEachFn);
+  registeredBeforeEachFn = beforeEachFn;
 }
 
-export function it(name: string, testFn: TestFn): TestCase {
-  const testCase = {
-    name,
-    setUp: () => {
-      for (const beforeEachFn of beforeEachCollection) {
-        beforeEachFn();
-      }
-    },
-    run: testFn,
-    tearDown: () => {
-      for (const afterEachFn of afterEachCollection) {
-        afterEachFn();
-      }
-    },
-  };
-  testCollection.push(testCase);
-  return testCase;
+export function it(name: string, testFn: TestFn) {
+  registeredTests.push({ name, testFn });
 }
 
 export function afterEach(afterEachFn: AfterEachFn) {
-  afterEachCollection.push(afterEachFn);
+  registeredAfterEachFn = afterEachFn;
 }

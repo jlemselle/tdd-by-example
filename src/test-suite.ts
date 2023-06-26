@@ -15,7 +15,7 @@ export class TestSuite {
         test.setUp();
         test.run();
       } catch (err) {
-        result.testFailed();
+        result.testFailed(test.name);
       }
       test.tearDown();
     });

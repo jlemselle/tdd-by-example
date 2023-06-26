@@ -28,7 +28,7 @@ export const testSuite = describe("test cases and suites", () => {
 
   it("should format failed result", () => {
     result.testStarted();
-    result.testFailed();
+    result.testFailed("failed test");
     assert("1 run, 1 failed" === result.summary());
   });
 

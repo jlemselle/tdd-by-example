@@ -9,6 +9,15 @@ export class TestSuite {
   }
 
   run(result: TestResult) {
-    this.tests.forEach((test) => test.run(result));
+    this.tests.forEach((test) => {
+      result.testStarted();
+      try {
+        test.setUp();
+        test.run();
+      } catch (err) {
+        result.testFailed();
+      }
+      test.tearDown();
+    });
   }
 }
